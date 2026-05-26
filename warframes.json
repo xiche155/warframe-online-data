@@ -1,91 +1,510 @@
-import json
-
-# 从你的原代码中复制完整的 warframe_data 列表（63个战甲）
-warframe_data = [
-    # 战甲名称                          外号            蓝图来源                                              头部神经光元                                                  机体                                                      系统
-    ["灰炽之刃 (Ash)",                   "阿屎/轮椅",    "商店星币购买",                                        "海王星比邻星域防御 / 生存 A 轮（13.33%）歼灭 / 爆发（4.82%）",     "冥王星比邻星域防御 / 生存 A 轮（13.33%）歼灭 / 爆发（4.82%）",     "金星比邻星域防御 / 生存 A 轮（13.33%）歼灭 / 爆发（4.88%）"],
-    ["撼天刑者 (Atlas)",                   "土甲",         "完成 Jordas 枢律任务后获得",                         "阋神星，Jordas 魔像刺杀（38.72%）",                           "阋神星，Jordas 魔像刺杀（38.72%）",                           "阋神星，Jordas 魔像刺杀（22.56%）"],
-    ["恸哭女妖 (Banshee)",               "女妖",         "氏族道场的 Tenno 实验室中复制",                      "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制"],
-    ["圣拳武僧 (Baruuk)",                "和尚甲",       "金星 Little Duck 处，要声望达到刽子手等级（三级）",       "金星 Little Duck 处，要声望达到刽子手等级（三级）",              "金星 Little Duck 处，要声望达到刽子手等级（三级）",              "金星 Little Duck 处，要声望达到刽子手等级（三级）"],
-    ["卡利班 (Caliban)",                 "卡甲",         "商店星币购买",                                        "夜灵平野和奥布山谷中的合一众赏金任务（需完成新纪之战）",          "夜灵平野和奥布山谷中的合一众赏金任务（需完成新纪之战）",          "夜灵平野和奥布山谷中的合一众赏金任务（需完成新纪之战）"],
-    ["怒炎龙骑 (Chroma)",                "龙甲",         "系列任务新疑谜团",                                    "天王星结合点",                                              "海王星结合点",                                              "冥王星结合点"],
-    ["辉光晶灵 (Citrine)",               "水晶甲",       "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换", "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换",   "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换",   "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换"],
-    ["九（CYTE-09）",                          "老九",         "六人组系列任务",                                      "霍瓦尼亚中央商场赏金等级 65-70/1999 阿米尔处",                "霍瓦尼亚中央商场赏金等级 75-80/1999 阿米尔处",                "霍瓦尼亚中央商场赏金等级 55-60/1999 阿米尔处"],
-    ["无面骑影 (Dagath)",                "马甲",         "氏族道场的 Dagath 的空阁",                           "氏族道场的 Dagath 的空阁",                                  "氏族道场的 Dagath 的空阁",                                  "氏族道场的 Dagath 的空阁"],
-    ["缮写士 (Dante)",                     "甲",           "火卫二卫城区中断任务",                                "火卫二卫城区中断任务",                                       "火卫二卫城区中断任务",                                       "火卫二卫城区中断任务"],
-    ["永恒烈焰 (Ember)",                 "火鸡",         "商店星币购买",                                        "土星 Tethys Sargas Ruk 将军",                               "土星 Tethys Sargas Ruk 将军",                               "土星 Tethys Sargas Ruk 将军"],
-    ["阴阳双子 (Equinox)",               "扶她",         "商店星币购买",                                        "天王星 Titania Tyl Regor",                                  "天王星 Titania Tyl Regor",                                  "天王星 Titania Tyl Regor"],
-    ["圣剑 (Excalibur)",                 "咖喱",         "商店星币购买",                                        "火星 War Lech Kril 中尉",                                    "火星 War Lech Kril 中尉",                                    "火星 War Lech Kril 中尉"],
-    ["冰雪寒霜 (Frost)",                 "冰男、冰队",    "商店星币购买",                                        "谷神星 Exta",                                               "谷神星 Exta",                                               "谷神星 Exta"],
-    ["琉璃仕女 (Gara)",                  "玻璃甲",       "系列任务 Saya 的守夜",                                "夜灵平野赏金任务 赏金 阶段 4，lvl 20-40",                     "赏金 阶段 3，lvl 5-15",                                      "赏金 阶段 3，lvl 10-30"],
-    ["迦楼罗 (Garuda)",                  "血甲",         "系列任务索拉里斯之声",                                 "奥布山谷的赏金任务 20-40 阶段 2.3",                          "奥布山谷的赏金任务 5-15 阶段 2.3",                           "奥布山谷的赏金任务 10-30 阶段 2.3"],
-    ["迅电驰影 (Gauss)",                 "高斯",         "商店星币购买",                                        "赛德娜 Kappa",                                              "赛德娜 Kappa",                                              "赛德娜 Kappa"],
-    ["暴食者 (Grendel)",                 "大胖",         "欧罗巴专属任务",                                      "均衡仲裁者的仲裁阁下处每个 25 生息精华兑换定位信标，完成节点",    "均衡仲裁者的仲裁阁下处每个 25 生息精华兑换定位信标，完成节点",    "均衡仲裁者的仲裁阁下处每个 25 生息精华兑换定位信标，完成节点"],
-    ["电光舞者 (Gyre)",                  "电光甲",       "羽化之穹 坚守者赏金 4.5",                             "羽化之穹 坚守者赏金 1",                                     "羽化之穹 坚守者赏金 2",                                     "羽化之穹 坚守者赏金 3"],
-    ["驱魔使者 (Harrow)",                "主教",          "系列任务 Harrow 的枷锁",                              "赤毒要塞间谍任务（Pago）的 A 轮以及生存任务（Taveuni）的 C 轮",  "虚空裂缝的堕落敌人（开启虚空遗物任务的金色怪）",                 "叛逃任务的 B、C 轮以及赤毒要塞生存任务 C 轮"],
-    ["重装武神 (Hildryn)",               "母牛",         "金星 Little Duck 处，要声望达到",                     "剥削者圆蛛掉落",                                            "剥削者圆蛛掉落",                                            "剥削者圆蛛掉落"],
-    ["惊涛骇浪 (Hydroid)",               "水甲",         "商店星币购买",                                        "地球 Oro Vay Hek 议员",                                     "地球 Oro Vay Hek 议员",                                     "地球 Oro Vay Hek 议员"],
-    ["沙海怒涛 (Inaros)",                "沙甲",         "Inaros 之沙系列任务",                                 "中继站 中枢 Simaris",                                       "中继站 中枢 Simaris",                                       "中继站 中枢 Simaris"],
-    ["神弓游侠 (Ivara)",                 "弓妹",         "间谍任务 C 轮 3 阶难度（25 级以上）",                  "间谍任务 C 轮 3 阶难度（25 级以上）",                        "间谍任务 C 轮 2 阶难度（15-25 级）",                        "间谍任务 C 轮 1 阶难度（1-15 级）"],
-    ["圣天使 (Jade)",                    "天使",         "Jade 之影系列任务",                                   "天王星 布鲁图斯 Ordis 处使用残存微粒兑换",                    "天王星 布鲁图斯 Ordis 处使用残存微粒兑换",                    "天王星 布鲁图斯 Ordis 处使用残存微粒兑换"],
-    ["荒野猎手 (Khora)",                 "猫甲",         "普通级圣殿突袭 c 轮",                                 "普通级圣殿突袭 b 轮",                                       "普通级圣殿突袭 a 轮",                                       "普通级圣殿突袭 c 轮"],
-    ["御命织姬 (Koumei)",                "色子甲",       "地球 萨娅的异象节点或希图斯的",                        "地球 萨娅的异象节点或希图斯的 Koumei 祈运坛使用命运之珠",       "地球 萨娅的异象节点或希图斯的 Koumei 祈运坛使用命运之珠",       "地球 萨娅的异象节点或希图斯的 Koumei 祈运坛使用命运之珠"],
-    ["刀锋囚徒 (Kullervo)",              "刀哥",         "回廊言录使处兑换",                                    "回廊言录使处兑换",                                          "回廊言录使处兑换",                                          "回廊言录使处兑换"],
-    ["无限术士 (Lavos)",                 "药水哥",       "火卫二 “父亲” 处购买",                               "火卫二 “父亲” 处购买",                                      "火卫二 “父亲” 处购买",                                      "火卫二 “父亲” 处购买"],
-    ["灵薄狱 (Limbo)",                   "小明",         "系列任务 Limbo 定理",                                 "系列任务 Limbo 定理",                                       "系列任务 Limbo 定理",                                       "系列任务 Limbo 定理"],
-    ["邪神洛基 (Loki)",                  "洛基",         "商店星币购买",                                        "海王星 Psamathe 骸狗群",                                    "海王星 Psamathe 骸狗群",                                    "海王星 Psamathe 骸狗群"],
-    ["磁力 (Mag)",                       "磁妹",         "商店星币购买",                                        "火卫一 ILIAD 海军陆战队中士",                               "火卫一 ILIAD 海军陆战队中士",                               "火卫一 ILIAD 海军陆战队中士"],
-    ["圣枪弥撒 (Mesa)",                  "女枪",         "商店星币购买",                                        "阋神星 异融 Alad V 刺杀",                                   "阋神星 异融 Alad V 刺杀",                                   "阋神星 异融 Alad V 刺杀"],
-    ["魅影精灵 (Mirage)",                "小丑",         "系列任务被隐藏的信息任务",                             "系列任务被隐藏的信息任务",                                   "系列任务被隐藏的信息任务",                                   "系列任务被隐藏的信息任务"],
-    ["御魂主宰 (Nekros)",                "摸/摸尸",          "商店星币购买",                                        "火卫二 Magnacidium Lephantis",                              "火卫二 Magnacidium Lephantis",                              "火卫二 Magnacidium Lephantis"],
-    ["哪吒三太子 (Nezha)",               "三太子",       "氏族道场的 Tenno 实验室中复制",                       "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制"],
-    ["异变之巢 (Nidus)",                 "蛆",         "系列任务 Glast 的千钧一策",                           "阋神星 Oestrus Infested 资源回收 C 轮",                     "阋神星 Oestrus Infested 资源回收 C 轮",                     "阋神星 Oestrus Infested 资源回收 C 轮"],
-    ["蘑菇小子（NOKKO）",                            "蘑菇",         "金星夜帽深矿赏金（需完成新纪之战系列任务）",            "金星夜帽深矿赏金（需完成新纪之战系列任务）",                  "金星夜帽深矿赏金（需完成新纪之战系列任务）",                  "金星夜帽深矿赏金（需完成新纪之战系列任务）"],
-    ["超能新星 (Nova)",                  "诺娃",         "商店星币购买",                                        "欧罗巴 Naamah 猛禽",                                        "欧罗巴 Naamah 猛禽",                                        "欧罗巴 Naamah 猛禽"],
-    ["冥河夜神 (Nyx)",                   "脑溢血",       "商店星币购买",                                        "Infested 入侵任务 Phorid（不固定出现）",                     "Infested 入侵任务 Phorid（不固定出现）",                     "Infested 入侵任务 Phorid（不固定出现）"],
-    ["龙王奥伯 (Oberon)",                "龙王",         "商店星币购买",                                        "地球比邻星域",                                               "土星比邻星域",                                               "地球比邻星域"],
-    ["吟游歌者 (Octavia)",               "DJ甲",           "系列任务 Octavia 的赞歌",                             "火卫二的生存任务 C 轮次奖励",                                "完成月球音乐密室后，破坏处于顶部的储存容器获得",               "月球歼灭任务 Orokin 储藏舱 A 轮"],
-    ["缚影蛛后（ORAXIA）",                           "蜘蛛",         "言录使处使用急行蛛外壳兑换",                          "言录使处使用急行蛛外壳兑换",                                "言录使处使用急行蛛外壳兑换",                                "言录使处使用急行蛛外壳兑换"],
-    ["泊时灵械 (Protea)",                "炮台甲",       "系列任务僵局协议",                                    "格拉努虚空轮次 C",                                          "扩展格拉努虚空轮次 C",                                      "噩梦格拉努虚空轮次 C"],
-    ["辐能堡垒 (Qorvex)",                "辐甲",         "墙中低语系列任务",                                    "科维兽赏金 1 阶赏金 科维兽声望等级 2 研究者鸟三兑换",         "科维兽赏金 2 阶赏金 科维兽声望等级 2 研究者鸟三兑换",         "科维兽赏金 3 阶赏金 科维兽声望等级 2 研究者鸟三兑换"],
-    ["徘徊夜灵 (Revenant)",              "夜灵",         "Nakak 系列任务",                                      "夜灵平野赏金任务",                                          "夜灵平野赏金任务",                                          "夜灵平野赏金任务"],
-    ["狂野犀牛 (Rhino)",                 "牛甲",         "商店星币购买",                                        "金星 Fossa 豺狼",                                           "金星 Fossa 豺狼",                                           "金星 Fossa 豺狼"],
-    ["剧毒之触 (Saryn)",                 "毒妈",         "商店星币购买",                                        "赛德娜 Merrow Kela De Thaym",                               "赛德娜 Merrow Kela De Thaym",                               "赛德娜 Merrow Kela De Thaym"],
-    ["虚冥鬼影 (Sevagoth)",              "鬼甲",         "风暴的呼唤系列任务",                                  "海王星比邻星域，冥王星比邻星域和面纱比邻星域的虚空风暴任务",    "海王星比邻星域，冥王星比邻星域和面纱比邻星域的虚空风暴任务",    "海王星比邻星域，冥王星比邻星域和面纱比邻星域的虚空风暴任务"],
-    ["无畏斗士 (Styanax)",               "斯巴达",       "卡尔驻军达到家园声望等级在切片哥处兑换",              "卡尔驻军达到堡垒声望等级在切片哥处兑换",                     "卡尔驻军达到定居地声望等级在切片哥处兑换",                   "卡尔驻军达到营地声望等级在切片哥处兑换"],
-    ["赤焰狂歌（TEMPLE）",                           "吉他",         "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取", "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取",      "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取",      "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取"],
-    ["幻蝶仙灵 (Titania)",               "蝶妹",         "落银树庭系列任务",                                    "中继站 中枢 Simaris",                                       "中继站 中枢 Simaris",                                       "中继站 中枢 Simaris"],
-    ["三位一体 (Trinity)",               "奶妈",         "商店星币购买",                                        "冥王星 Hades Ambulas",                                      "冥王星 Hades Ambulas",                                      "冥王星 Hades Ambulas"],
-    ["炼狱使徒（URIEL）",                            "恶魔",         "旧日和平任务",                                        "沉沦之地第 21 层罗瑟 或在大教堂处的罗瑟处购买",               "沉沦之地第 21 层罗瑟 或在大教堂处的罗瑟处购买",               "沉沦之地第 21 层罗瑟 或在大教堂处的罗瑟处购买"],
-    ["瓦尔基里 (Valkyr)",                "瓦喵",         "商店星币购买",                                        "木星 Themisto Alad V",                                      "木星 Themisto Alad V",                                      "木星 Themisto Alad V"],
-    ["工程统帅 (Vauban)",                "工程",         "商店星币购买",                                        "通过午夜电波代币兑换（推荐等回廊奖励）",                      "通过午夜电波代币兑换（推荐等回廊奖励）",                      "通过午夜电波代币兑换（推荐等回廊奖励）"],
-    ["伏特 (Volt)",                      "电男",         "氏族道场的 Tenno 实验室中复制",                      "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制"],
-    ["赤影狼母 (Voruna)",                "狼妹",         "月球联结生存或在扎利曼号哲士扬塔处兑换",               "月球联结生存或在扎利曼号哲士扬塔处兑换",                     "月球联结生存或在扎利曼号哲士扬塔处兑换",                     "月球联结生存或在扎利曼号哲士扬塔处兑换"],
-    ["离火幻灵 (Wisp)",                  "花甲",         "木星 蝠力使",                                         "木星 蝠力使",                                               "木星 蝠力使",                                               "木星 蝠力使"],
-    ["齐天大圣 (Wukong)",                "猴子",         "氏族道场的 Tenno 实验室中复制",                      "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制"],
-    ["虚空残响 (Xaku)",                  "骨甲",         "惊惧之心系列任务",                                    "魔胎之境的赏金任务 赏金 2，阶段 2，3",                       "赏金 5，阶段 2，3，4，5",                                   "赏金 4，阶段 2，3，4，5"],
-    ["咏浪之灵 (Yareli)",                "水妹",         "系列任务驭浪者",                                      "氏族道场的通风小子的拼装实验室复制",                          "氏族道场的通风小子的拼装实验室复制",                          "氏族道场的通风小子的拼装实验室复制"],
-    ["狂啸西风 (Zephyr)",                "鸟姐",         "氏族道场的 Tenno 实验室中复制",                      "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制",                              "氏族道场的 Tenno 实验室中复制"],
-]
-
-# 转换成 JSON 格式
-output = {
-    "version": "1.0.0",
-    "update_date": "2025-01-16",
-    "data": [
-        {
-            "name": item[0],
-            "nickname": item[1],
-            "blueprint": item[2],
-            "neuroptics": item[3],
-            "chassis": item[4],
-            "systems": item[5]
-        }
-        for item in warframe_data
-    ]
+{
+  "version": "1.0.0",
+  "update_date": "2025-01-16",
+  "data": [
+    {
+      "name": "灰炽之刃 (Ash)",
+      "nickname": "阿屎/轮椅",
+      "blueprint": "商店星币购买",
+      "neuroptics": "海王星比邻星域防御 / 生存 A 轮（13.33%）歼灭 / 爆发（4.82%）",
+      "chassis": "冥王星比邻星域防御 / 生存 A 轮（13.33%）歼灭 / 爆发（4.82%）",
+      "systems": "金星比邻星域防御 / 生存 A 轮（13.33%）歼灭 / 爆发（4.88%）"
+    },
+    {
+      "name": "撼天刑者 (Atlas)",
+      "nickname": "土甲",
+      "blueprint": "完成 Jordas 枢律任务后获得",
+      "neuroptics": "阋神星，Jordas 魔像刺杀（38.72%）",
+      "chassis": "阋神星，Jordas 魔像刺杀（38.72%）",
+      "systems": "阋神星，Jordas 魔像刺杀（22.56%）"
+    },
+    {
+      "name": "恸哭女妖 (Banshee)",
+      "nickname": "女妖",
+      "blueprint": "氏族道场的 Tenno 实验室中复制",
+      "neuroptics": "氏族道场的 Tenno 实验室中复制",
+      "chassis": "氏族道场的 Tenno 实验室中复制",
+      "systems": "氏族道场的 Tenno 实验室中复制"
+    },
+    {
+      "name": "圣拳武僧 (Baruuk)",
+      "nickname": "和尚甲",
+      "blueprint": "金星 Little Duck 处，要声望达到刽子手等级（三级）",
+      "neuroptics": "金星 Little Duck 处，要声望达到刽子手等级（三级）",
+      "chassis": "金星 Little Duck 处，要声望达到刽子手等级（三级）",
+      "systems": "金星 Little Duck 处，要声望达到刽子手等级（三级）"
+    },
+    {
+      "name": "卡利班 (Caliban)",
+      "nickname": "卡甲",
+      "blueprint": "商店星币购买",
+      "neuroptics": "夜灵平野和奥布山谷中的合一众赏金任务（需完成新纪之战）",
+      "chassis": "夜灵平野和奥布山谷中的合一众赏金任务（需完成新纪之战）",
+      "systems": "夜灵平野和奥布山谷中的合一众赏金任务（需完成新纪之战）"
+    },
+    {
+      "name": "怒炎龙骑 (Chroma)",
+      "nickname": "龙甲",
+      "blueprint": "系列任务新疑谜团",
+      "neuroptics": "天王星结合点",
+      "chassis": "海王星结合点",
+      "systems": "冥王星结合点"
+    },
+    {
+      "name": "辉光晶灵 (Citrine)",
+      "nickname": "水晶甲",
+      "blueprint": "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换",
+      "neuroptics": "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换",
+      "chassis": "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换",
+      "systems": "火星的镜像防御任务中 C 轮也可在火星 Otak 处使用水晶碎片兑换"
+    },
+    {
+      "name": "九（CYTE-09）",
+      "nickname": "老九",
+      "blueprint": "六人组系列任务",
+      "neuroptics": "霍瓦尼亚中央商场赏金等级 65-70/1999 阿米尔处",
+      "chassis": "霍瓦尼亚中央商场赏金等级 75-80/1999 阿米尔处",
+      "systems": "霍瓦尼亚中央商场赏金等级 55-60/1999 阿米尔处"
+    },
+    {
+      "name": "无面骑影 (Dagath)",
+      "nickname": "马甲",
+      "blueprint": "氏族道场的 Dagath 的空阁",
+      "neuroptics": "氏族道场的 Dagath 的空阁",
+      "chassis": "氏族道场的 Dagath 的空阁",
+      "systems": "氏族道场的 Dagath 的空阁"
+    },
+    {
+      "name": "缮写士 (Dante)",
+      "nickname": "甲",
+      "blueprint": "火卫二卫城区中断任务",
+      "neuroptics": "火卫二卫城区中断任务",
+      "chassis": "火卫二卫城区中断任务",
+      "systems": "火卫二卫城区中断任务"
+    },
+    {
+      "name": "永恒烈焰 (Ember)",
+      "nickname": "火鸡",
+      "blueprint": "商店星币购买",
+      "neuroptics": "土星 Tethys Sargas Ruk 将军",
+      "chassis": "土星 Tethys Sargas Ruk 将军",
+      "systems": "土星 Tethys Sargas Ruk 将军"
+    },
+    {
+      "name": "阴阳双子 (Equinox)",
+      "nickname": "扶她",
+      "blueprint": "商店星币购买",
+      "neuroptics": "天王星 Titania Tyl Regor",
+      "chassis": "天王星 Titania Tyl Regor",
+      "systems": "天王星 Titania Tyl Regor"
+    },
+    {
+      "name": "圣剑 (Excalibur)",
+      "nickname": "咖喱",
+      "blueprint": "商店星币购买",
+      "neuroptics": "火星 War Lech Kril 中尉",
+      "chassis": "火星 War Lech Kril 中尉",
+      "systems": "火星 War Lech Kril 中尉"
+    },
+    {
+      "name": "冰雪寒霜 (Frost)",
+      "nickname": "冰男、冰队",
+      "blueprint": "商店星币购买",
+      "neuroptics": "谷神星 Exta",
+      "chassis": "谷神星 Exta",
+      "systems": "谷神星 Exta"
+    },
+    {
+      "name": "琉璃仕女 (Gara)",
+      "nickname": "玻璃甲",
+      "blueprint": "系列任务 Saya 的守夜",
+      "neuroptics": "夜灵平野赏金任务 赏金 阶段 4，lvl 20-40",
+      "chassis": "赏金 阶段 3，lvl 5-15",
+      "systems": "赏金 阶段 3，lvl 10-30"
+    },
+    {
+      "name": "迦楼罗 (Garuda)",
+      "nickname": "血甲",
+      "blueprint": "系列任务索拉里斯之声",
+      "neuroptics": "奥布山谷的赏金任务 20-40 阶段 2.3",
+      "chassis": "奥布山谷的赏金任务 5-15 阶段 2.3",
+      "systems": "奥布山谷的赏金任务 10-30 阶段 2.3"
+    },
+    {
+      "name": "迅电驰影 (Gauss)",
+      "nickname": "高斯",
+      "blueprint": "商店星币购买",
+      "neuroptics": "赛德娜 Kappa",
+      "chassis": "赛德娜 Kappa",
+      "systems": "赛德娜 Kappa"
+    },
+    {
+      "name": "暴食者 (Grendel)",
+      "nickname": "大胖",
+      "blueprint": "欧罗巴专属任务",
+      "neuroptics": "均衡仲裁者的仲裁阁下处每个 25 生息精华兑换定位信标，完成节点",
+      "chassis": "均衡仲裁者的仲裁阁下处每个 25 生息精华兑换定位信标，完成节点",
+      "systems": "均衡仲裁者的仲裁阁下处每个 25 生息精华兑换定位信标，完成节点"
+    },
+    {
+      "name": "电光舞者 (Gyre)",
+      "nickname": "电光甲",
+      "blueprint": "羽化之穹 坚守者赏金 4.5",
+      "neuroptics": "羽化之穹 坚守者赏金 1",
+      "chassis": "羽化之穹 坚守者赏金 2",
+      "systems": "羽化之穹 坚守者赏金 3"
+    },
+    {
+      "name": "驱魔使者 (Harrow)",
+      "nickname": "主教",
+      "blueprint": "系列任务 Harrow 的枷锁",
+      "neuroptics": "赤毒要塞间谍任务（Pago）的 A 轮以及生存任务（Taveuni）的 C 轮",
+      "chassis": "虚空裂缝的堕落敌人（开启虚空遗物任务的金色怪）",
+      "systems": "叛逃任务的 B、C 轮以及赤毒要塞生存任务 C 轮"
+    },
+    {
+      "name": "重装武神 (Hildryn)",
+      "nickname": "母牛",
+      "blueprint": "金星 Little Duck 处，要声望达到",
+      "neuroptics": "剥削者圆蛛掉落",
+      "chassis": "剥削者圆蛛掉落",
+      "systems": "剥削者圆蛛掉落"
+    },
+    {
+      "name": "惊涛骇浪 (Hydroid)",
+      "nickname": "水甲",
+      "blueprint": "商店星币购买",
+      "neuroptics": "地球 Oro Vay Hek 议员",
+      "chassis": "地球 Oro Vay Hek 议员",
+      "systems": "地球 Oro Vay Hek 议员"
+    },
+    {
+      "name": "沙海怒涛 (Inaros)",
+      "nickname": "沙甲",
+      "blueprint": "Inaros 之沙系列任务",
+      "neuroptics": "中继站 中枢 Simaris",
+      "chassis": "中继站 中枢 Simaris",
+      "systems": "中继站 中枢 Simaris"
+    },
+    {
+      "name": "神弓游侠 (Ivara)",
+      "nickname": "弓妹",
+      "blueprint": "间谍任务 C 轮 3 阶难度（25 级以上）",
+      "neuroptics": "间谍任务 C 轮 3 阶难度（25 级以上）",
+      "chassis": "间谍任务 C 轮 2 阶难度（15-25 级）",
+      "systems": "间谍任务 C 轮 1 阶难度（1-15 级）"
+    },
+    {
+      "name": "圣天使 (Jade)",
+      "nickname": "天使",
+      "blueprint": "Jade 之影系列任务",
+      "neuroptics": "天王星 布鲁图斯 Ordis 处使用残存微粒兑换",
+      "chassis": "天王星 布鲁图斯 Ordis 处使用残存微粒兑换",
+      "systems": "天王星 布鲁图斯 Ordis 处使用残存微粒兑换"
+    },
+    {
+      "name": "荒野猎手 (Khora)",
+      "nickname": "猫甲",
+      "blueprint": "普通级圣殿突袭 c 轮",
+      "neuroptics": "普通级圣殿突袭 b 轮",
+      "chassis": "普通级圣殿突袭 a 轮",
+      "systems": "普通级圣殿突袭 c 轮"
+    },
+    {
+      "name": "御命织姬 (Koumei)",
+      "nickname": "色子甲",
+      "blueprint": "地球 萨娅的异象节点或希图斯的",
+      "neuroptics": "地球 萨娅的异象节点或希图斯的 Koumei 祈运坛使用命运之珠",
+      "chassis": "地球 萨娅的异象节点或希图斯的 Koumei 祈运坛使用命运之珠",
+      "systems": "地球 萨娅的异象节点或希图斯的 Koumei 祈运坛使用命运之珠"
+    },
+    {
+      "name": "刀锋囚徒 (Kullervo)",
+      "nickname": "刀哥",
+      "blueprint": "回廊言录使处兑换",
+      "neuroptics": "回廊言录使处兑换",
+      "chassis": "回廊言录使处兑换",
+      "systems": "回廊言录使处兑换"
+    },
+    {
+      "name": "无限术士 (Lavos)",
+      "nickname": "药水哥",
+      "blueprint": "火卫二 “父亲” 处购买",
+      "neuroptics": "火卫二 “父亲” 处购买",
+      "chassis": "火卫二 “父亲” 处购买",
+      "systems": "火卫二 “父亲” 处购买"
+    },
+    {
+      "name": "灵薄狱 (Limbo)",
+      "nickname": "小明",
+      "blueprint": "系列任务 Limbo 定理",
+      "neuroptics": "系列任务 Limbo 定理",
+      "chassis": "系列任务 Limbo 定理",
+      "systems": "系列任务 Limbo 定理"
+    },
+    {
+      "name": "邪神洛基 (Loki)",
+      "nickname": "洛基",
+      "blueprint": "商店星币购买",
+      "neuroptics": "海王星 Psamathe 骸狗群",
+      "chassis": "海王星 Psamathe 骸狗群",
+      "systems": "海王星 Psamathe 骸狗群"
+    },
+    {
+      "name": "磁力 (Mag)",
+      "nickname": "磁妹",
+      "blueprint": "商店星币购买",
+      "neuroptics": "火卫一 ILIAD 海军陆战队中士",
+      "chassis": "火卫一 ILIAD 海军陆战队中士",
+      "systems": "火卫一 ILIAD 海军陆战队中士"
+    },
+    {
+      "name": "圣枪弥撒 (Mesa)",
+      "nickname": "女枪",
+      "blueprint": "商店星币购买",
+      "neuroptics": "阋神星 异融 Alad V 刺杀",
+      "chassis": "阋神星 异融 Alad V 刺杀",
+      "systems": "阋神星 异融 Alad V 刺杀"
+    },
+    {
+      "name": "魅影精灵 (Mirage)",
+      "nickname": "小丑",
+      "blueprint": "系列任务被隐藏的信息任务",
+      "neuroptics": "系列任务被隐藏的信息任务",
+      "chassis": "系列任务被隐藏的信息任务",
+      "systems": "系列任务被隐藏的信息任务"
+    },
+    {
+      "name": "御魂主宰 (Nekros)",
+      "nickname": "摸/摸尸",
+      "blueprint": "商店星币购买",
+      "neuroptics": "火卫二 Magnacidium Lephantis",
+      "chassis": "火卫二 Magnacidium Lephantis",
+      "systems": "火卫二 Magnacidium Lephantis"
+    },
+    {
+      "name": "哪吒三太子 (Nezha)",
+      "nickname": "三太子",
+      "blueprint": "氏族道场的 Tenno 实验室中复制",
+      "neuroptics": "氏族道场的 Tenno 实验室中复制",
+      "chassis": "氏族道场的 Tenno 实验室中复制",
+      "systems": "氏族道场的 Tenno 实验室中复制"
+    },
+    {
+      "name": "异变之巢 (Nidus)",
+      "nickname": "蛆",
+      "blueprint": "系列任务 Glast 的千钧一策",
+      "neuroptics": "阋神星 Oestrus Infested 资源回收 C 轮",
+      "chassis": "阋神星 Oestrus Infested 资源回收 C 轮",
+      "systems": "阋神星 Oestrus Infested 资源回收 C 轮"
+    },
+    {
+      "name": "蘑菇小子（NOKKO）",
+      "nickname": "蘑菇",
+      "blueprint": "金星夜帽深矿赏金（需完成新纪之战系列任务）",
+      "neuroptics": "金星夜帽深矿赏金（需完成新纪之战系列任务）",
+      "chassis": "金星夜帽深矿赏金（需完成新纪之战系列任务）",
+      "systems": "金星夜帽深矿赏金（需完成新纪之战系列任务）"
+    },
+    {
+      "name": "超能新星 (Nova)",
+      "nickname": "诺娃",
+      "blueprint": "商店星币购买",
+      "neuroptics": "欧罗巴 Naamah 猛禽",
+      "chassis": "欧罗巴 Naamah 猛禽",
+      "systems": "欧罗巴 Naamah 猛禽"
+    },
+    {
+      "name": "冥河夜神 (Nyx)",
+      "nickname": "脑溢血",
+      "blueprint": "商店星币购买",
+      "neuroptics": "Infested 入侵任务 Phorid（不固定出现）",
+      "chassis": "Infested 入侵任务 Phorid（不固定出现）",
+      "systems": "Infested 入侵任务 Phorid（不固定出现）"
+    },
+    {
+      "name": "龙王奥伯 (Oberon)",
+      "nickname": "龙王",
+      "blueprint": "商店星币购买",
+      "neuroptics": "地球比邻星域",
+      "chassis": "土星比邻星域",
+      "systems": "地球比邻星域"
+    },
+    {
+      "name": "吟游歌者 (Octavia)",
+      "nickname": "DJ甲",
+      "blueprint": "系列任务 Octavia 的赞歌",
+      "neuroptics": "火卫二的生存任务 C 轮次奖励",
+      "chassis": "完成月球音乐密室后，破坏处于顶部的储存容器获得",
+      "systems": "月球歼灭任务 Orokin 储藏舱 A 轮"
+    },
+    {
+      "name": "缚影蛛后（ORAXIA）",
+      "nickname": "蜘蛛",
+      "blueprint": "言录使处使用急行蛛外壳兑换",
+      "neuroptics": "言录使处使用急行蛛外壳兑换",
+      "chassis": "言录使处使用急行蛛外壳兑换",
+      "systems": "言录使处使用急行蛛外壳兑换"
+    },
+    {
+      "name": "泊时灵械 (Protea)",
+      "nickname": "炮台甲",
+      "blueprint": "系列任务僵局协议",
+      "neuroptics": "格拉努虚空轮次 C",
+      "chassis": "扩展格拉努虚空轮次 C",
+      "systems": "噩梦格拉努虚空轮次 C"
+    },
+    {
+      "name": "辐能堡垒 (Qorvex)",
+      "nickname": "辐甲",
+      "blueprint": "墙中低语系列任务",
+      "neuroptics": "科维兽赏金 1 阶赏金 科维兽声望等级 2 研究者鸟三兑换",
+      "chassis": "科维兽赏金 2 阶赏金 科维兽声望等级 2 研究者鸟三兑换",
+      "systems": "科维兽赏金 3 阶赏金 科维兽声望等级 2 研究者鸟三兑换"
+    },
+    {
+      "name": "徘徊夜灵 (Revenant)",
+      "nickname": "夜灵",
+      "blueprint": "Nakak 系列任务",
+      "neuroptics": "夜灵平野赏金任务",
+      "chassis": "夜灵平野赏金任务",
+      "systems": "夜灵平野赏金任务"
+    },
+    {
+      "name": "狂野犀牛 (Rhino)",
+      "nickname": "牛甲",
+      "blueprint": "商店星币购买",
+      "neuroptics": "金星 Fossa 豺狼",
+      "chassis": "金星 Fossa 豺狼",
+      "systems": "金星 Fossa 豺狼"
+    },
+    {
+      "name": "剧毒之触 (Saryn)",
+      "nickname": "毒妈",
+      "blueprint": "商店星币购买",
+      "neuroptics": "赛德娜 Merrow Kela De Thaym",
+      "chassis": "赛德娜 Merrow Kela De Thaym",
+      "systems": "赛德娜 Merrow Kela De Thaym"
+    },
+    {
+      "name": "虚冥鬼影 (Sevagoth)",
+      "nickname": "鬼甲",
+      "blueprint": "风暴的呼唤系列任务",
+      "neuroptics": "海王星比邻星域，冥王星比邻星域和面纱比邻星域的虚空风暴任务",
+      "chassis": "海王星比邻星域，冥王星比邻星域和面纱比邻星域的虚空风暴任务",
+      "systems": "海王星比邻星域，冥王星比邻星域和面纱比邻星域的虚空风暴任务"
+    },
+    {
+      "name": "无畏斗士 (Styanax)",
+      "nickname": "斯巴达",
+      "blueprint": "卡尔驻军达到家园声望等级在切片哥处兑换",
+      "neuroptics": "卡尔驻军达到堡垒声望等级在切片哥处兑换",
+      "chassis": "卡尔驻军达到定居地声望等级在切片哥处兑换",
+      "systems": "卡尔驻军达到营地声望等级在切片哥处兑换"
+    },
+    {
+      "name": "赤焰狂歌（TEMPLE）",
+      "nickname": "吉他",
+      "blueprint": "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取",
+      "neuroptics": "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取",
+      "chassis": "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取",
+      "systems": "六人组的声望等级 4 新鲜出炉在舞台防御任务轮次奖励中获取"
+    },
+    {
+      "name": "幻蝶仙灵 (Titania)",
+      "nickname": "蝶妹",
+      "blueprint": "落银树庭系列任务",
+      "neuroptics": "中继站 中枢 Simaris",
+      "chassis": "中继站 中枢 Simaris",
+      "systems": "中继站 中枢 Simaris"
+    },
+    {
+      "name": "三位一体 (Trinity)",
+      "nickname": "奶妈",
+      "blueprint": "商店星币购买",
+      "neuroptics": "冥王星 Hades Ambulas",
+      "chassis": "冥王星 Hades Ambulas",
+      "systems": "冥王星 Hades Ambulas"
+    },
+    {
+      "name": "炼狱使徒（URIEL）",
+      "nickname": "恶魔",
+      "blueprint": "旧日和平任务",
+      "neuroptics": "沉沦之地第 21 层罗瑟 或在大教堂处的罗瑟处购买",
+      "chassis": "沉沦之地第 21 层罗瑟 或在大教堂处的罗瑟处购买",
+      "systems": "沉沦之地第 21 层罗瑟 或在大教堂处的罗瑟处购买"
+    },
+    {
+      "name": "瓦尔基里 (Valkyr)",
+      "nickname": "瓦喵",
+      "blueprint": "商店星币购买",
+      "neuroptics": "木星 Themisto Alad V",
+      "chassis": "木星 Themisto Alad V",
+      "systems": "木星 Themisto Alad V"
+    },
+    {
+      "name": "工程统帅 (Vauban)",
+      "nickname": "工程",
+      "blueprint": "商店星币购买",
+      "neuroptics": "通过午夜电波代币兑换（推荐等回廊奖励）",
+      "chassis": "通过午夜电波代币兑换（推荐等回廊奖励）",
+      "systems": "通过午夜电波代币兑换（推荐等回廊奖励）"
+    },
+    {
+      "name": "伏特 (Volt)",
+      "nickname": "电男",
+      "blueprint": "氏族道场的 Tenno 实验室中复制",
+      "neuroptics": "氏族道场的 Tenno 实验室中复制",
+      "chassis": "氏族道场的 Tenno 实验室中复制",
+      "systems": "氏族道场的 Tenno 实验室中复制"
+    },
+    {
+      "name": "赤影狼母 (Voruna)",
+      "nickname": "狼妹",
+      "blueprint": "月球联结生存或在扎利曼号哲士扬塔处兑换",
+      "neuroptics": "月球联结生存或在扎利曼号哲士扬塔处兑换",
+      "chassis": "月球联结生存或在扎利曼号哲士扬塔处兑换",
+      "systems": "月球联结生存或在扎利曼号哲士扬塔处兑换"
+    },
+    {
+      "name": "离火幻灵 (Wisp)",
+      "nickname": "花甲",
+      "blueprint": "木星 蝠力使",
+      "neuroptics": "木星 蝠力使",
+      "chassis": "木星 蝠力使",
+      "systems": "木星 蝠力使"
+    },
+    {
+      "name": "齐天大圣 (Wukong)",
+      "nickname": "猴子",
+      "blueprint": "氏族道场的 Tenno 实验室中复制",
+      "neuroptics": "氏族道场的 Tenno 实验室中复制",
+      "chassis": "氏族道场的 Tenno 实验室中复制",
+      "systems": "氏族道场的 Tenno 实验室中复制"
+    },
+    {
+      "name": "虚空残响 (Xaku)",
+      "nickname": "骨甲",
+      "blueprint": "惊惧之心系列任务",
+      "neuroptics": "魔胎之境的赏金任务 赏金 2，阶段 2，3",
+      "chassis": "赏金 5，阶段 2，3，4，5",
+      "systems": "赏金 4，阶段 2，3，4，5"
+    },
+    {
+      "name": "咏浪之灵 (Yareli)",
+      "nickname": "水妹",
+      "blueprint": "系列任务驭浪者",
+      "neuroptics": "氏族道场的通风小子的拼装实验室复制",
+      "chassis": "氏族道场的通风小子的拼装实验室复制",
+      "systems": "氏族道场的通风小子的拼装实验室复制"
+    },
+    {
+      "name": "狂啸西风 (Zephyr)",
+      "nickname": "鸟姐",
+      "blueprint": "氏族道场的 Tenno 实验室中复制",
+      "neuroptics": "氏族道场的 Tenno 实验室中复制",
+      "chassis": "氏族道场的 Tenno 实验室中复制",
+      "systems": "氏族道场的 Tenno 实验室中复制"
+    }
+  ]
 }
-
-with open("warframes.json", "w", encoding="utf-8") as f:
-    json.dump(output, f, ensure_ascii=False, indent=2)
-
-print("生成成功，共", len(output["data"]), "个战甲")
